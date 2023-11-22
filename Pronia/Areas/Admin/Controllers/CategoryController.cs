@@ -5,6 +5,7 @@ using Pronia.Models;
 
 namespace Pronia.Areas.Admin.Controllers
 {
+        [Area("Admin")]
     public class CategoryController : Controller
     {
 
@@ -15,7 +16,6 @@ namespace Pronia.Areas.Admin.Controllers
                 _context = context;
             }
 
-        [Area("Admin")]
         public IActionResult Index()
         {
             List<Category> categories = _context.Categories.Include(p=>p.Products).ToList();
