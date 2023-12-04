@@ -8,10 +8,10 @@ using static Pronia.Areas.Admin.ViewModels.Product.UpdateProductVM;
 
 namespace Pronia.Areas.Admin.Controllers
 {
-        [Area("Admin")]
+    [Area("Admin")]
     public class ProductController : Controller
     {
-        AppDbContext _context {  get; set; }
+        AppDbContext _context { get; set; }
         IWebHostEnvironment _env { get; set; }
 
 
@@ -24,14 +24,14 @@ namespace Pronia.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             List<Product> product = await _context.Products.Include(p => p.Category)
-                .Include(p=>p.ProductTags).ThenInclude(pt=>pt.Tag).Include(p=>p.ProductImages).ToListAsync();
+                .Include(p => p.ProductTags).ThenInclude(pt => pt.Tag).Include(p => p.ProductImages).ToListAsync();
             return View(product);
         }
 
         public async Task<IActionResult> Create()
         {
-            ViewBag.Categories =await _context.Categories.ToListAsync();
-            ViewBag.Tags = await _context.Tags.ToListAsync(); 
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            ViewBag.Tags = await _context.Tags.ToListAsync();
             return View();
         }
 
@@ -45,20 +45,20 @@ namespace Pronia.Areas.Admin.Controllers
                 return View("Error");
             }
 
-            bool resultCategory = await _context.Categories.AnyAsync(c=> c.Id==createProductVM.CategoryId);
+            bool resultCategory = await _context.Categories.AnyAsync(c => c.Id == createProductVM.CategoryId);
             if (!resultCategory)
             {
                 ModelState.AddModelError("CategoryId", "There is no such category");
                 return View();
             }
-            Product product = new Product() 
+            Product product = new Product()
             {
-               Name = createProductVM.Name,
-               Price= createProductVM.Price,
-               Description = createProductVM.Description,
-               SKU= createProductVM.SKU,
-               CategoryId= createProductVM.CategoryId,
-               ProductImages=new List<ProductImage>()
+                Name = createProductVM.Name,
+                Price = createProductVM.Price,
+                Description = createProductVM.Description,
+                SKU = createProductVM.SKU,
+                CategoryId = createProductVM.CategoryId,
+                ProductImages = new List<ProductImage>()
             };
 
             if (createProductVM.TagIds != null)
@@ -90,7 +90,7 @@ namespace Pronia.Areas.Admin.Controllers
                 return View();
             }
 
-            if (!createProductVM.MainPhoto.CheckLenght(3000))
+            if (!createProductVM.MainPhoto.CheckLength(3000))
             {
                 ModelState.AddModelError("MainPhoto", "The maximum can be 3mb");
                 return View();
@@ -102,7 +102,7 @@ namespace Pronia.Areas.Admin.Controllers
                 return View();
             }
 
-            if (!createProductVM.HoverPhoto.CheckLenght(3000))
+            if (!createProductVM.HoverPhoto.CheckLength(3000))
             {
                 ModelState.AddModelError("HoverPhoto", "The maximum can be 3mb");
                 return View();
@@ -135,7 +135,7 @@ namespace Pronia.Areas.Admin.Controllers
                         continue;
                     }
 
-                    if (!item.CheckLenght(3000))
+                    if (!item.CheckLength(3000))
                     {
                         TempData["Error"] += $"{item.FileName} more than 3mb \t";
                         continue;
@@ -162,12 +162,12 @@ namespace Pronia.Areas.Admin.Controllers
         public async Task<IActionResult> Update(int id)
         {
 
-            Product product = await _context.Products.Include(p=>p.Category)
-                .Include(p=>p.ProductTags)
-                .ThenInclude(p=>p.Tag)
-                .Include(p=>p.ProductImages)
+            Product product = await _context.Products.Include(p => p.Category)
+                .Include(p => p.ProductTags)
+                .ThenInclude(p => p.Tag)
+                .Include(p => p.ProductImages)
                 .Where(p => p.Id == id).FirstOrDefaultAsync();
-            if(product is null)
+            if (product is null)
             {
                 return View("Error");
             }
@@ -179,17 +179,17 @@ namespace Pronia.Areas.Admin.Controllers
                 Name = product.Name,
                 Price = product.Price,
                 Description = product.Description,
-                SKU= product.SKU,
-                CategoryId= product.CategoryId,
-                TagIds=new List<int>(),
-                productImages=new List<ProductImagesVm>()
+                SKU = product.SKU,
+                CategoryId = product.CategoryId,
+                TagIds = new List<int>(),
+                productImages = new List<ProductImagesVm>()
             };
-            foreach(var item in product.ProductTags)
+            foreach (var item in product.ProductTags)
             {
                 updateProductVM.TagIds.Add(item.TagId);
             }
 
-            foreach(var item in product.ProductImages)
+            foreach (var item in product.ProductImages)
             {
                 ProductImagesVm productImages = new ProductImagesVm()
                 {
@@ -209,59 +209,56 @@ namespace Pronia.Areas.Admin.Controllers
         {
             ViewBag.Categories = await _context.Categories.ToListAsync();
             ViewBag.Tags = await _context.Tags.ToListAsync();
+
             if (!ModelState.IsValid)
             {
                 return View();
             }
-            Product existProduct = await _context.Products.Include(p=>p.ProductTags).ThenInclude(pt=>pt.Tag).Include(p=>p.ProductImages).Where(p => p.Id == updateProductVM.Id).FirstOrDefaultAsync();
-            if (existProduct is null)
+
+            Product existProduct = await _context.Products.Include(p => p.ProductTags).ThenInclude(pt => pt.Tag).Include(p => p.ProductImages).Where(p => p.Id == updateProductVM.Id).FirstOrDefaultAsync();
+            if (existProduct == null)
             {
                 return View("Error");
             }
+
             bool resultCategory = await _context.Categories.AnyAsync(c => c.Id == updateProductVM.CategoryId);
             if (!resultCategory)
             {
-                ModelState.AddModelError("CategoryId", "There is no such category");
+                ModelState.AddModelError("Category", "Category not found");
                 return View();
             }
-            existProduct.Name=updateProductVM.Name;
-            existProduct.Price=updateProductVM.Price;
-            existProduct.SKU=updateProductVM.SKU;
-            existProduct.Description=updateProductVM.Description;
-            existProduct.CategoryId=updateProductVM.CategoryId;
 
+            existProduct.Name = updateProductVM.Name;
+            existProduct.Description = updateProductVM.Description;
+            existProduct.SKU = updateProductVM.SKU;
+            existProduct.CategoryId = updateProductVM.CategoryId;
+            existProduct.Price = updateProductVM.Price;
 
 
             if (updateProductVM.TagIds != null)
             {
+
                 foreach (int tagId in updateProductVM.TagIds)
                 {
                     bool resultTag = await _context.Tags.AnyAsync(c => c.Id == tagId);
                     if (!resultTag)
                     {
-                        ModelState.AddModelError("TagIds", "There is no such tag");
+                        ModelState.AddModelError("TagIds", $"{tagId}--> no such a tag was found");
                         return View();
                     }
+
+
                 }
-
-                List<ProductTag> removeTags = existProduct.ProductTags.Where(pt => updateProductVM.TagIds.Contains(pt.TagId)).ToList();
-
-                _context.ProductTags.RemoveRange(removeTags);
-
 
                 List<int> createTags;
-
                 if (existProduct.ProductTags != null)
                 {
-                    createTags = updateProductVM.TagIds.Where(ti => existProduct.ProductTags.Exists(pt => pt.TagId == ti)).ToList();
+                    createTags = updateProductVM.TagIds.Where(ti => !existProduct.ProductTags.Exists(pt => pt.TagId == ti)).ToList();
                 }
-
-
 
                 else
                 {
                     createTags = updateProductVM.TagIds.ToList();
-
                 }
 
                 foreach (var tagId in createTags)
@@ -270,32 +267,36 @@ namespace Pronia.Areas.Admin.Controllers
                     {
                         TagId = tagId,
                         ProductId = existProduct.Id
+
                     };
 
-
-                    await _context.ProductTags.AddAsync(productTag);
-
+                    _context.ProductTags.Add(productTag);
                 }
 
+                List<ProductTag> removeTags = existProduct.ProductTags.Where(pt => !updateProductVM.TagIds.Contains(pt.TagId)).ToList();
+
+                _context.ProductTags.RemoveRange(removeTags);
+
             }
+
             else
             {
-                var productTagList=_context.ProductTags.Where(pt=>pt.ProductId == existProduct.Id).ToList();
+                var productTagList = _context.ProductTags.Where(pt => pt.ProductId == existProduct.Id).ToList();
                 _context.ProductTags.RemoveRange(productTagList);
             }
-            TempData["Error"] = "";
 
-            if(updateProductVM.MainPhoto!= null)
+            TempData["Error"] = "";
+            if (updateProductVM.MainPhoto != null)
             {
                 if (!updateProductVM.MainPhoto.CheckContent("image/"))
                 {
-                    ModelState.AddModelError("MainPhoto", "Enter the correct format");
+                    ModelState.AddModelError("MainPhoto", "Duzgun formatda sekil yerlesdirin");
                     return View();
                 }
 
-                if (!updateProductVM.MainPhoto.CheckLenght(3000))
+                if (!updateProductVM.MainPhoto.CheckLength(3000))
                 {
-                    ModelState.AddModelError("MainPhoto", "The maximum can be 3mb");
+                    ModelState.AddModelError("MainPhoto", "max 3mb sekil yukleye bilersiz");
                     return View();
                 }
 
@@ -304,95 +305,103 @@ namespace Pronia.Areas.Admin.Controllers
                     IsPrime = true,
                     ProductId = existProduct.Id,
                     ImgUrl = updateProductVM.MainPhoto.Upload(_env.WebRootPath, @"\Upload\Product\")
-                    
                 };
-
                 var oldMainPhoto = existProduct.ProductImages?.FirstOrDefault(p => p.IsPrime == true);
                 existProduct.ProductImages?.Remove(oldMainPhoto);
                 existProduct.ProductImages.Add(newMainImages);
+
+
             }
 
             if (updateProductVM.HoverPhoto != null)
             {
                 if (!updateProductVM.HoverPhoto.CheckContent("image/"))
                 {
-                    ModelState.AddModelError("HoverPhoto", "Enter the correct format");
+                    ModelState.AddModelError("HoverPhoto", "Duzgun formatda sekil yerlesdirin");
                     return View();
                 }
 
-                if (!updateProductVM.HoverPhoto.CheckLenght(3000))
+                if (!updateProductVM.HoverPhoto.CheckLength(3000))
                 {
-                    ModelState.AddModelError("HoverPhoto", "The maximum can be 3mb");
+                    ModelState.AddModelError("HoverPhoto", "max 3mb sekil yukleye bilersiz");
                     return View();
                 }
 
-                ProductImage newHoverImages = new ProductImage()
+                ProductImage newMainImages = new ProductImage()
                 {
-                    IsPrime = false,
+                    IsPrime = true,
                     ProductId = existProduct.Id,
-                    ImgUrl = updateProductVM.HoverPhoto.Upload(_env.WebRootPath, @"\Upload\Product\")
-
+                    ImgUrl = updateProductVM.MainPhoto.Upload(_env.WebRootPath, @"\Upload\Product\")
                 };
+                var oldMainPhoto = existProduct.ProductImages?.FirstOrDefault(p => p.IsPrime == true);
+                existProduct.ProductImages?.Remove(oldMainPhoto);
+                existProduct.ProductImages.Add(newMainImages);
 
-                var oldHoverPhoto = existProduct.ProductImages?.FirstOrDefault(p => p.IsPrime == false);
-                existProduct.ProductImages?.Remove(oldHoverPhoto);
-                existProduct.ProductImages.Add(newHoverImages);
+
             }
 
-            if(updateProductVM.Photos != null)
-
+            if (updateProductVM.Photos != null)
             {
                 foreach (var item in updateProductVM.Photos)
                 {
                     if (!item.CheckContent("image/"))
                     {
-                        TempData["Error"] += $"{item.FileName} the type is not correct \t";
+                        TempData["Error"] += $"{item.FileName} --> type is wrong \t";
                         continue;
                     }
 
-                    if (!item.CheckLenght(3000))
+                    if (!item.CheckLength(3000))
                     {
-                        TempData["Error"] += $"{item.FileName} more than 3mb \t";
+                        TempData["Error"] += $"{item.FileName} 's quality is more than 3 mb \t";
                         continue;
                     }
 
                     ProductImage newPhoto = new ProductImage()
                     {
                         IsPrime = null,
-                        ImgUrl = item.Upload(_env.WebRootPath, @"\Upload\Product\"),
-                        Product = existProduct
+                        Product = existProduct,
+                        ImgUrl = updateProductVM.HoverPhoto.Upload(_env.WebRootPath, @"\Upload\Product\")
                     };
+
                     existProduct.ProductImages.Add(newPhoto);
+
                 }
+
             }
 
-            if(updateProductVM.ImageIds != null)
+            if (updateProductVM.ImageIds != null)
             {
-            var removeListImage=existProduct.ProductImages?.Where(p=>!updateProductVM.ImageIds.Contains(p.Id)&& p.IsPrime==null).ToList();
-            foreach (var item in removeListImage)
-            {
-                existProduct.ProductImages.Remove(item);
-                item.ImgUrl.DeleteFile(_env.WebRootPath,@"\Upload\Product\");
-            }
+
+                var removeListImage = existProduct.ProductImages.Where(p => !updateProductVM.ImageIds.Contains(p.Id) && p.IsPrime == null).ToList();
+
+                foreach (var item in removeListImage)
+                {
+                    existProduct.ProductImages.Remove(item);
+                    item.ImgUrl.DeleteFile(_env.WebRootPath, @"\Upload\Product\");
+                }
 
             }
             else
             {
-                existProduct.ProductImages.RemoveAll(p=>p.IsPrime==null);
+                existProduct.ProductImages.RemoveAll(p => p.IsPrime == null);
             }
+
+
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
 
+
         public IActionResult Delete(int id)
         {
-            var product = _context.Products.FirstOrDefault(p => p.Id==id);
-            if(product is null)
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            if (product == null)
             {
                 return View("Error");
             }
+
             _context.Products.Remove(product);
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));

@@ -24,7 +24,7 @@
         {
             return file.ContentType.Contains(content);
         }
-        public static bool CheckLenght(this IFormFile file, int lenght)
+        public static bool CheckLength(this IFormFile file, int lenght)
         {
             return file.Length <= lenght*1024;
         }
