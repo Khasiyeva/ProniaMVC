@@ -20,8 +20,16 @@
             }
             return fileName;
         }
+        public static bool CheckContent(this IFormFile file, string content)
+        {
+            return file.ContentType.Contains(content);
+        }
+        public static bool CheckLenght(this IFormFile file, int lenght)
+        {
+            return file.Length <= lenght*1024;
+        }
 
-        public static void DeleteFile(string imgUrl, string envPath, string folderName)
+        public static void DeleteFile(this string imgUrl, string envPath, string folderName)
         {
             string path = envPath + folderName + imgUrl;
 

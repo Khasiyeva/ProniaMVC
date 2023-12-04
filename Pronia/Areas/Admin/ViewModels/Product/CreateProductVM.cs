@@ -1,4 +1,5 @@
 ﻿using Pronia.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pronia.Areas.Admin.ViewModels.Product
 {
@@ -10,5 +11,12 @@ namespace Pronia.Areas.Admin.ViewModels.Product
         public double Price { get; set; }
         public int? CategoryId { get; set; }
         public List<int>? TagIds { get; set; }
+        [Required]
+        public IFormFile MainPhoto { get; set; }
+        [Required]
+        public IFormFile HoverPhoto { get; set; }
+        [Required]
+        public List<IFormFile>? Photos { get; set; }
+
     }
 }

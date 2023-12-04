@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pronia.DAL;
 using Pronia.Models;
+using Pronia.ViewModels;
 
 namespace Pronia.Controllers
 {
@@ -21,8 +22,19 @@ namespace Pronia.Controllers
                 .Include(p=>p.ProductTags)
                 .ThenInclude(pt=>pt.Tag)
                 .FirstOrDefault(product=>product.Id == id);
+            if(product == null)
+            {
+                return NotFound();
+            }
 
-            return View(product);
+            DetailVM detailVM = new DetailVM()
+            {
+                Product = product,
+                Products = _db.Products.Include(p => p.ProductImages).Include(p => p.Category).Where(p=>p.CategoryId==product.CategoryId&&p.Id!=product.Id).ToList()
+            };
+
+
+            return View(detailVM);
         }
     }
 }

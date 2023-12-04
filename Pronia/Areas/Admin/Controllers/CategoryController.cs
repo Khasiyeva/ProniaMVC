@@ -66,5 +66,12 @@ namespace Pronia.Areas.Admin.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
+
+
+        public string GetString()
+        {
+            return "";
+        }
+
     }
 }

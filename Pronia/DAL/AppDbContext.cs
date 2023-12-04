@@ -17,5 +17,6 @@ namespace Pronia.DAL
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ProductTag> ProductTags { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Setting> Settings { get; set; }
     }
 }
