@@ -23,7 +23,7 @@ namespace Pronia.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            List<Product> product = await _context.Products.Include(p => p.Category)
+            List<Product> product = await _context.Products.Where(p=>p.IsDeleted==false).Include(p => p.Category)
                 .Include(p => p.ProductTags).ThenInclude(pt => pt.Tag).Include(p => p.ProductImages).ToListAsync();
             return View(product);
         }
