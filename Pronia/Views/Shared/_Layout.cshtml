@@ -153,19 +153,27 @@
                         </button>
                         <ul
                           class="dropdown-menu"
-                          aria-labelledby="settingButton"
-                        >
-                          <li>
-                            <a class="dropdown-item" href="my-account.html"
-                              >My account</a
-                            >
-                          </li>
-                          <li>
-                            <a class="dropdown-item" href="login-register.html"
-                              >Login | Register</a
-                            >
-                          </li>
-                        </ul>
+                          aria-labelledby="settingButton" >
+
+                                                @if (User.Identity.IsAuthenticated)
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" >@User.Identity.Name</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" asp-controller="Account" asp-action="LogOut">Log Out</a>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" asp-action="Login" asp-controller="Account" asp-route-ReturnUrl=@Context.Request.Path>Login</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" asp-action="Register" asp-controller="Account">Register</a>
+                                                    </li>
+                                                }
+                                            </ul>
                       </li>
                       <li class="d-none d-lg-block">
                         <a href="wishlist.html">
@@ -983,7 +991,7 @@
               <span class="ammount">$@Total</span>
             </div>
             <div class="group-btn_wrap d-grid gap-2">
-              <a href="cart.html" class="btn btn-dark">View Cart</a>
+              <a asp-controller="Card" asp-action="Index" class="btn btn-dark">View Cart</a>
               <a href="checkout.html" class="btn btn-dark">Checkout</a>
             </div>
           </div>

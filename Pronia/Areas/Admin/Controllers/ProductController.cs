@@ -5,7 +5,6 @@ using Pronia.DAL;
 using Pronia.Helpers;
 using Pronia.Models;
 using static Pronia.Areas.Admin.ViewModels.Product.UpdateProductVM;
-
 namespace Pronia.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -13,7 +12,6 @@ namespace Pronia.Areas.Admin.Controllers
     {
         AppDbContext _context { get; set; }
         IWebHostEnvironment _env { get; set; }
-
 
         public ProductController(AppDbContext context, IWebHostEnvironment env = null)
         {
@@ -215,7 +213,7 @@ namespace Pronia.Areas.Admin.Controllers
                 return View();
             }
 
-            Product existProduct = await _context.Products.Include(p => p.ProductTags).ThenInclude(pt => pt.Tag).Include(p => p.ProductImages).Where(p => p.Id == updateProductVM.Id).FirstOrDefaultAsync();
+            Product existProduct = await _context.Products.Where(p => p.IsDeleted == false).Include(p => p.ProductTags).ThenInclude(pt => pt.Tag).Include(p => p.ProductImages).Where(p => p.Id == updateProductVM.Id).FirstOrDefaultAsync();
             if (existProduct == null)
             {
                 return View("Error");
@@ -396,15 +394,15 @@ namespace Pronia.Areas.Admin.Controllers
 
         public IActionResult Delete(int id)
         {
-            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            var product = _context.Products.Where(p => p.IsDeleted == false).FirstOrDefault(p => p.Id == id);
             if (product == null)
             {
                 return View("Error");
             }
 
-            _context.Products.Remove(product);
+            product.IsDeleted = true;
             _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return Ok();
         }
     }
 }

@@ -20,17 +20,17 @@ namespace Pronia.ViewComponents
             switch (key) 
             {
                case 1: 
-                    products= _context.Products.Include(p => p.ProductImages).OrderByDescending(p=>p.Price).Take(3).ToList();
+                    products= _context.Products.Where(p => p.IsDeleted == false).Include(p => p.ProductImages).OrderByDescending(p=>p.Price).Take(3).ToList();
                     break;
                 case 2: 
-                    products= _context.Products.Include(p => p.ProductImages).Where(x => x.Price > 10 && x.Price < 30).Take(3).ToList();
+                    products= _context.Products.Where(p => p.IsDeleted == false).Include(p => p.ProductImages).Where(x => x.Price > 10 && x.Price < 30).Take(3).ToList();
                     break;
                 case 3: 
-                    products= _context.Products.Include(p => p.ProductImages).OrderByDescending(p=>p.Price).Take(3).ToList();
+                    products= _context.Products.Where(p => p.IsDeleted == false).Include(p => p.ProductImages).OrderByDescending(p=>p.Price).Take(3).ToList();
                     break;
                     
                 default: 
-                    products = _context.Products.Include(p => p.ProductImages).Take(2).ToList();
+                    products = _context.Products.Where(p => p.IsDeleted == false).Include(p => p.ProductImages).Take(2).ToList();
                     break;
             }
 

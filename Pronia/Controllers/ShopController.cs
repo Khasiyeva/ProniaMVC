@@ -18,6 +18,7 @@ namespace Pronia.Controllers
         public IActionResult Detail(int? id)
         {
             Product product = _db.Products.Include(p => p.Category)
+                .Where(p => p.IsDeleted == false)
                 .Include(p=>p.ProductImages)
                 .Include(p=>p.ProductTags)
                 .ThenInclude(pt=>pt.Tag)
@@ -30,7 +31,7 @@ namespace Pronia.Controllers
             DetailVM detailVM = new DetailVM()
             {
                 Product = product,
-                Products = _db.Products.Include(p => p.ProductImages).Include(p => p.Category).Where(p=>p.CategoryId==product.CategoryId&&p.Id!=product.Id).ToList()
+                Products = _db.Products.Where(p => p.IsDeleted == false).Include(p => p.ProductImages).Include(p => p.Category).Where(p=>p.CategoryId==product.CategoryId&&p.Id!=product.Id).ToList()
             };
 
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pronia.DAL;
 using Pronia.Models;
@@ -16,19 +17,21 @@ namespace Pronia.Areas.Admin.Controllers
                 _context = context;
             }
 
+        [Authorize(Roles ="Admin,Moderator")]
         public IActionResult Index()
         {
             List<Category> categories = _context.Categories.Include(p=>p.Products).ToList();
             return View(categories);
         }
 
-
+        [Authorize(Roles ="Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(Category category)
         {
             if(!ModelState.IsValid){
@@ -39,6 +42,7 @@ namespace Pronia.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             Category category = _context.Categories.Find(id);
@@ -47,6 +51,7 @@ namespace Pronia.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Update(int id)
         {
             Category category= _context.Categories.Find(id);

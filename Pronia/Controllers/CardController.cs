@@ -31,7 +31,7 @@ namespace Pronia.Controllers
                 List<CookieItemVM> deletedCookie=new List<CookieItemVM>();
                foreach(var item in cookieItems)
                 {
-                    Product product =_context.Products.Include(p=>p.ProductImages.Where(p=>p.IsPrime==true)).FirstOrDefault(p=>p.Id==item.Id);
+                    Product product =_context.Products.Where(p => p.IsDeleted == false).Include(p=>p.ProductImages.Where(p=>p.IsPrime==true)).FirstOrDefault(p=>p.Id==item.Id);
                     if(product == null)
                     {
                         deletedCookie.Add(item);
@@ -70,7 +70,7 @@ namespace Pronia.Controllers
         {
             if (id <= 0) return BadRequest();
 
-            Product product= _context.Products.FirstOrDefault(x => x.Id == id);
+            Product product= _context.Products.Where(p => p.IsDeleted == false).FirstOrDefault(x => x.Id == id);
             if(product == null)  return NotFound();
 
             List<CookieItemVM> basket;
@@ -114,6 +114,26 @@ namespace Pronia.Controllers
             return RedirectToAction(nameof(Index), "Home");
         }
 
+        public IActionResult RemoveBasketItem(int id)
+        {
+            var cookieBasket = Request.Cookies["Basket"];
+            if (cookieBasket != null)
+            {
+                List<CookieItemVM> basket = JsonConvert.DeserializeObject<List<CookieItemVM>>(cookieBasket);
+
+                var deleteElement = basket.FirstOrDefault(p => p.Id == id);
+                if (deleteElement != null)
+                {
+                    basket.Remove(deleteElement);
+                }
+
+
+                Response.Cookies.Append("Basket", JsonConvert.SerializeObject(basket));
+                return Ok();
+            }
+            return NotFound();
+            
+        }
         public IActionResult GetBasket()
         {
             var basketCookieJson = Request.Cookies["Basket"];

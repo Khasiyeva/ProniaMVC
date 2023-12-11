@@ -17,7 +17,7 @@ namespace Pronia.Controllers
         {
             HomeVM homeVM = new HomeVM()
             {
-                products =await _db.Products.Include(p => p.ProductImages).ToListAsync()
+                products =await _db.Products.Where(p => p.IsDeleted == false).Include(p => p.ProductImages).ToListAsync()
             };
 
             return View(homeVM);

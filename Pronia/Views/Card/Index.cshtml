@@ -45,7 +45,7 @@
                                         Total += item.Price * item.Count;
                                         <tr>
                                             <td class="product_remove">
-                                                <a asp-controller="Card" asp-action="Index" asp-route-id="@item.Id">
+                                                <a asp-action="RemoveBasketItem" asp-route-id=@item.Id class="remove-basket-item">
                                                     <i class="pe-7s-close"
                                                        data-tippy="Remove"
                                                        data-tippy-inertia="true"
